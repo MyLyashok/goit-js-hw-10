@@ -4,9 +4,11 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Page 3</title>
-    <script type="module" crossorigin src="/goit-js-hw-10/2-form.js"></script>
+    <title>Page 2</title>
+    <script type="module" crossorigin src="/goit-js-hw-10/1-timer.js"></script>
     <link rel="modulepreload" crossorigin href="/goit-js-hw-10/assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <link rel="modulepreload" crossorigin href="/goit-js-hw-10/assets/vendor-D0gBiHs0.js">
+    <link rel="stylesheet" crossorigin href="/goit-js-hw-10/assets/vendor-AL2zCFOW.css">
     <link rel="stylesheet" crossorigin href="/goit-js-hw-10/assets/styles-DL-L9Cwb.css">
   </head>
   <body>
@@ -20,14 +22,10 @@
           </a>
           <ul class="nav-list">
             <li class="nav-item">
-              <a class="nav-link {=$highlight-act}" href="/1-gallery.html"
-                >Gallery</a
-              >
+              <a class="nav-link {=$highlight-act}" href="">Gallery</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {=$highlight-curr}" href="/2-form.html"
-                >Form</a
-              >
+              <a class="nav-link {=$highlight-curr}" href="">Form</a>
             </li>
           </ul>
         </nav>
@@ -37,26 +35,10 @@
     <main>
       <div class="container">
         <a class="back-link" href="./index.html">Go back</a>
-        <h1 class="main-title">Form</h1>
-
-        <form class="feedback-form" autocomplete="off">
-          <div class="div-email">
-            <label class="label-email">
-              Email
-              <input type="email" name="email" autofocus />
-            </label>
-          </div>
-
-          <div class="div-message">
-            <label class="lable-message">
-              Message
-              <textarea name="message" rows="8"></textarea>
-            </label>
-          </div>
-
-          <button class="sub-button" type="submit">Submit</button>
-        </form>
+        <h1 class="main-title">Gallery</h1>
       </div>
+
+      <ul class="gallery"></ul>
     </main>
   </body>
 </html>
