@@ -1,90 +1,83 @@
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
-const images = [
-  {
-    preview:
-      'https://cdn.pixabay.com/photo/2019/05/14/16/43/rchids-4202820__480.jpg',
-    original:
-      'https://cdn.pixabay.com/photo/2019/05/14/16/43/rchids-4202820_1280.jpg',
-    description: 'Hokkaido Flower',
-  },
-  {
-    preview:
-      'https://cdn.pixabay.com/photo/2019/05/14/22/05/container-4203677__340.jpg',
-    original:
-      'https://cdn.pixabay.com/photo/2019/05/14/22/05/container-4203677_1280.jpg',
-    description: 'Container Haulage Freight',
-  },
-  {
-    preview:
-      'https://cdn.pixabay.com/photo/2019/05/16/09/47/beach-4206785__340.jpg',
-    original:
-      'https://cdn.pixabay.com/photo/2019/05/16/09/47/beach-4206785_1280.jpg',
-    description: 'Aerial Beach View',
-  },
-  {
-    preview:
-      'https://cdn.pixabay.com/photo/2016/11/18/16/19/flowers-1835619__340.jpg',
-    original:
-      'https://cdn.pixabay.com/photo/2016/11/18/16/19/flowers-1835619_1280.jpg',
-    description: 'Flower Blooms',
-  },
-  {
-    preview:
-      'https://cdn.pixabay.com/photo/2018/09/13/10/36/mountains-3674334__340.jpg',
-    original:
-      'https://cdn.pixabay.com/photo/2018/09/13/10/36/mountains-3674334_1280.jpg',
-    description: 'Alpine Mountains',
-  },
-  {
-    preview:
-      'https://cdn.pixabay.com/photo/2019/05/16/23/04/landscape-4208571__340.jpg',
-    original:
-      'https://cdn.pixabay.com/photo/2019/05/16/23/04/landscape-4208571_1280.jpg',
-    description: 'Mountain Lake Sailing',
-  },
-  {
-    preview:
-      'https://cdn.pixabay.com/photo/2019/05/17/09/27/the-alps-4209272__340.jpg',
-    original:
-      'https://cdn.pixabay.com/photo/2019/05/17/09/27/the-alps-4209272_1280.jpg',
-    description: 'Alpine Spring Meadows',
-  },
-  {
-    preview:
-      'https://cdn.pixabay.com/photo/2019/05/16/21/10/landscape-4208255__340.jpg',
-    original:
-      'https://cdn.pixabay.com/photo/2019/05/16/21/10/landscape-4208255_1280.jpg',
-    description: 'Nature Landscape',
-  },
-  {
-    preview:
-      'https://cdn.pixabay.com/photo/2019/05/17/04/35/lighthouse-4208843__340.jpg',
-    original:
-      'https://cdn.pixabay.com/photo/2019/05/17/04/35/lighthouse-4208843_1280.jpg',
-    description: 'Lighthouse Coast Sea',
-  },
-];
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
 
-const gallery = document.querySelector('.gallery');
-const markup = images.map(image => {
-    return `<li class="gallery-item">
-  <a class="gallery-link" href='${image.original}'>
-    <img
-      class="gallery-image"
-      src='${image.preview}'
-      alt='${image.description}'
-    />
-  </a>
-</li>`
-}).join('');
+const startBtn = document.querySelector('[data-start]');
+const days = document.querySelector('[data-days]');
+const hours = document.querySelector('[data-hours]');
+const minutes = document.querySelector('[data-minutes]');
+const seconds = document.querySelector('[data-seconds]');
+const inputCalendar = document.querySelector('#datetime-picker');
 
-gallery.insertAdjacentHTML('beforeend', markup);
+let userSelectedDate = null;
+startBtn.disabled = true;
 
-new SimpleLightbox(".gallery-link", {
-    captionsData: 'alt',
-    captionPosition: 'bottom',
-    captionDelay: 250
+function addLeadingZero(value) {
+  return String(value).padStart(2, "0");
+}
+
+const options = {
+  enableTime: true,
+  time_24hr: true,
+  defaultDate: new Date(),
+  minuteIncrement: 1,
+  onClose(selectedDates) {
+    const selectedDate = selectedDates[0];
+
+    if (selectedDate <= Date.now()) {
+iziToast.error({
+  title: 'Error',
+  message: 'Please choose a date in the future',
+  position: 'topRight',
 });
+      startBtn.disabled = true;
+    } else {
+      userSelectedDate = selectedDate;
+      startBtn.disabled = false;
+    }
+  },
+};
 
+flatpickr(inputCalendar, options);
+
+
+
+function convertMs(ms) {
+  const second = 1000;
+  const minute = second * 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+
+  const days = Math.floor(ms / day);
+  const hours = Math.floor((ms % day) / hour);
+  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+
+  return { days, hours, minutes, seconds };
+}
+
+startBtn.addEventListener("click", () => {
+  startBtn.disabled = true;  
+  inputCalendar.disabled = true;  
+
+  const intervalId = setInterval(() => {
+    const ms = userSelectedDate - Date.now();
+    const time = convertMs(ms);
+
+    days.textContent = addLeadingZero(time.days);
+    hours.textContent = addLeadingZero(time.hours);
+    minutes.textContent = addLeadingZero(time.minutes);
+    seconds.textContent = addLeadingZero(time.seconds);
+
+    if (ms <= 0) {
+      clearInterval(intervalId);
+      days.textContent = "00";
+      hours.textContent = "00";
+      minutes.textContent = "00";
+      seconds.textContent = "00";
+      inputCalendar.disabled = false;
+    }
+  }, 1000);
+});
