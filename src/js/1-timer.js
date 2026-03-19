@@ -18,32 +18,6 @@ function addLeadingZero(value) {
   return String(value).padStart(2, "0");
 }
 
-const options = {
-  enableTime: true,
-  time_24hr: true,
-  defaultDate: new Date(),
-  minuteIncrement: 1,
-  onClose(selectedDates) {
-    const selectedDate = selectedDates[0];
-
-    if (selectedDate <= Date.now()) {
-iziToast.error({
-  title: 'Error',
-  message: 'Please choose a date in the future',
-  position: 'topRight',
-});
-      startBtn.disabled = true;
-    } else {
-      userSelectedDate = selectedDate;
-      startBtn.disabled = false;
-    }
-  },
-};
-
-flatpickr(inputCalendar, options);
-
-
-
 function convertMs(ms) {
   const second = 1000;
   const minute = second * 60;
@@ -58,26 +32,52 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
+function updateTimerDisplay({ days: d, hours: h, minutes: m, seconds: s }) {
+  days.textContent = addLeadingZero(d);
+  hours.textContent = addLeadingZero(h);
+  minutes.textContent = addLeadingZero(m);
+  seconds.textContent = addLeadingZero(s);
+}
+
+const options = {
+  enableTime: true,
+  time_24hr: true,
+  defaultDate: new Date(),
+  minuteIncrement: 1,
+  onClose(selectedDates) {
+    const selectedDate = selectedDates[0];
+
+    if (selectedDate <= Date.now()) {
+      iziToast.error({
+        title: 'Error',
+        message: 'Please choose a date in the future',
+        position: 'topRight',
+      });
+      startBtn.disabled = true;
+    } else {
+      userSelectedDate = selectedDate;
+      startBtn.disabled = false;
+    }
+  },
+};
+
+flatpickr(inputCalendar, options);
+
 startBtn.addEventListener("click", () => {
-  startBtn.disabled = true;  
-  inputCalendar.disabled = true;  
+  startBtn.disabled = true;
+  inputCalendar.disabled = true;
 
   const intervalId = setInterval(() => {
     const ms = userSelectedDate - Date.now();
-    const time = convertMs(ms);
-
-    days.textContent = addLeadingZero(time.days);
-    hours.textContent = addLeadingZero(time.hours);
-    minutes.textContent = addLeadingZero(time.minutes);
-    seconds.textContent = addLeadingZero(time.seconds);
 
     if (ms <= 0) {
       clearInterval(intervalId);
-      days.textContent = "00";
-      hours.textContent = "00";
-      minutes.textContent = "00";
-      seconds.textContent = "00";
+      updateTimerDisplay({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       inputCalendar.disabled = false;
+      return;
     }
+
+    const time = convertMs(ms);
+    updateTimerDisplay(time);
   }, 1000);
 });
